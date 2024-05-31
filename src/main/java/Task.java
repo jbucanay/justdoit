@@ -3,9 +3,9 @@ import java.time.LocalDateTime;
 public class Task {
     private String title;
     private String description;
-    private String priority;
+    private Priorities priority;
     private LocalDateTime deadline;
-    private String category;
+    private Categories category;
 
     public String getTitle() {
         return title;
@@ -23,11 +23,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getPriority() {
+    public Priorities getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(Priorities priority) {
         this.priority = priority;
     }
 
@@ -39,11 +39,11 @@ public class Task {
         this.deadline = deadline;
     }
 
-    public String getCategory() {
+    public Categories getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Categories category) {
         this.category = category;
     }
 }
