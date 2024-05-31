@@ -1,5 +1,6 @@
 public class Main {
     public static void main(String[] args) {
-        Utility.userInteraction();
+        Utility utility = new Utility();
+        utility.userInteraction();
     }
 }
