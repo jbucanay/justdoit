@@ -12,8 +12,7 @@ public class Main {
         DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",dbName, uname , pwd, "5432");
         Utility utility = new Utility();
         utility.userInteraction();
-        try {
-            Connection connection = dcm.getConnection();
+        try(Connection connection = dcm.getConnection()) {
             utility.rowInsert(connection);
 //            Statement statement = connection.createStatement();
 //            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
