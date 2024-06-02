@@ -1,3 +1,6 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,8 +10,13 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Utility {
-    private static final Scanner scanner = new Scanner(System.in);
-    private Task task = new Task();
+    private final Scanner scanner;
+    private final Task task;
+
+    public Utility(){
+        this.task = new Task();
+        this.scanner = new Scanner(System.in);
+    }
 
     //use user interaction with resourses to safely close the resources when done
     public void userInteraction() {
@@ -20,8 +28,8 @@ public class Utility {
         Priorities priority = pickPriority();
         System.out.println("Task category");
         Categories category = pickCategory();
-        LocalDate date = getDate();
-        LocalTime time = getTime();
+        LocalDate date = noNullDate();
+        LocalTime time = noNullTime();
         LocalDateTime deadline = LocalDateTime.of(date,time);
         task.setTitle(title);
         task.setDescription(description);
@@ -94,6 +102,13 @@ public class Utility {
         }
     }
 
+    private LocalDate noNullDate(){
+        while (getDate() == null){
+            return getDate();
+        }
+        return getDate();
+    }
+
     private LocalTime getTime() {
         try {
             System.out.println("Time of Task hh:mm");
@@ -105,4 +120,29 @@ public class Utility {
             return null;
         }
     }
+
+    private LocalTime noNullTime(){
+        while (getTime() == null){
+            return getTime();
+        }
+        return getTime();
+    }
+
+    public void rowInsert(Connection connection) {
+        try{
+            String sqlInsert = "INSERT INTO TODO (TITLE, DESCRIPTION, PRIORITY, DEADLINE, CATEGORY) VALUES (?,?,?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
+            preparedStatement.setString(1, this.task.getTitle());
+            preparedStatement.setString(2, this.task.getDescription());
+            preparedStatement.setString(3, this.task.getPriority().name());
+            preparedStatement.setObject(4, this.task.getDeadline());
+            preparedStatement.setString(5, this.task.getCategory().name());
+            preparedStatement.execute();
+            System.out.println("Row inserted");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
 }
