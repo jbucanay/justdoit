@@ -18,15 +18,27 @@ public class Utility {
         this.scanner = new Scanner(System.in);
     }
 
+    private void formattedAskString(String ask, int typeOrChoice){
+        String star = "*";
+        String askStr = "* "+ask+" *";
+        int sizeOfAsk = askStr.length();
+        System.out.println(star.repeat(sizeOfAsk));
+        System.out.printf("%s%n", askStr);
+        System.out.println(star.repeat(sizeOfAsk));
+        if (typeOrChoice == 1) {
+            System.out.print("Type: ");
+        }
+    }
+
     //use user interaction with resourses to safely close the resources when done
     public void userInteraction() {
-        System.out.println("Type title of task");
+        formattedAskString("Task title", 1);
         String title = this.cleanInput();
-        System.out.println("Type description");
+        formattedAskString("Task description", 1);
         String description = this.cleanInput();
-        System.out.println("Task priority");
+        formattedAskString("Task priority", 2);
         Priorities priority = pickPriority();
-        System.out.println("Task category");
+        formattedAskString("Task category", 2);
         Categories category = pickCategory();
         LocalDate date = noNullDate();
         LocalTime time = noNullTime();
