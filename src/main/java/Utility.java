@@ -1,13 +1,14 @@
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+
 
 public class Utility {
     private final Scanner scanner;
@@ -39,7 +40,7 @@ public class Utility {
     /**
      * Interacts with the user to gather and set task details.
      */
-    public void userInteraction() {
+    public void addTasks() {
         formattedAskString("Task title", 1);
         String title = this.cleanInput();
         formattedAskString("Task description", 1);
@@ -67,9 +68,8 @@ public class Utility {
     private String cleanInput() {
         String userInput = scanner.nextLine();
 
-        while (userInput.length() < 5) {
-            System.out.println("Length must be greater than 5");
-            userInput = scanner.nextLine();
+        if(userInput.length() < 5) {
+            cleanInput();
         }
 
         return userInput;
@@ -184,7 +184,40 @@ public class Utility {
         }
     }
 
+public void showAllTasks(){
+    //            Statement statement = connection.createStatement();
+//            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
+//            while (resultSet.next()){
+//                System.out.println(resultSet.getInt(1));
+//            }
+}
 
+public void appProcess(){
+    try {
+        formattedAskString("Welcome to task management", 2);
+        System.out.println("""
+                Type 1: Add Tasks
+                Type 2: View Tasks
+                Type 3: Edit Task
+                Type 4: Delete task
+                Type 5: Exit
+                """);
+        System.out.print("Choice: ");
+        int interactWith = scanner.nextInt();
+        switch (interactWith){
+            case 1 -> addTasks();
+            case 2 -> System.out.println("view task");
+            case 3 -> System.out.println("Edit task");
+            case 4 -> System.out.println("Delete task");
+            case 5 -> System.out.println("Exiting...");
+            default -> appProcess();
+        }
+    }catch (InputMismatchException e){
+        System.out.println(e.getMessage());
+
+    }
+
+}
 
 
 }

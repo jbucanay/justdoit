@@ -11,7 +11,7 @@ public class Main {
         String pwd = System.getenv("POSTGRES_PSWD");
         DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",dbName, uname , pwd, "5432");
         Utility utility = new Utility();
-        utility.userInteraction();
+        utility.appProcess();
         try(Connection connection = dcm.getConnection()) {
             utility.rowInsert(connection);
         } catch (SQLException e){
