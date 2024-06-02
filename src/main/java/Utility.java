@@ -18,9 +18,15 @@ public class Utility {
         this.scanner = new Scanner(System.in);
     }
 
-    private void formattedAskString(String ask, int typeOrChoice){
+    /**
+     * Prints a formatted string with asterisks and an optional prompt.
+     *
+     * @param ask The string to be printed.
+     * @param typeOrChoice If 1, prints "Type: " after the string.
+     */
+    private void formattedAskString(String ask, int typeOrChoice) {
         String star = "*";
-        String askStr = "* "+ask+" *";
+        String askStr = "* " + ask + " *";
         int sizeOfAsk = askStr.length();
         System.out.println(star.repeat(sizeOfAsk));
         System.out.printf("%s%n", askStr);
@@ -30,7 +36,9 @@ public class Utility {
         }
     }
 
-    //use user interaction with resourses to safely close the resources when done
+    /**
+     * Interacts with the user to gather and set task details.
+     */
     public void userInteraction() {
         formattedAskString("Task title", 1);
         String title = this.cleanInput();
@@ -40,8 +48,8 @@ public class Utility {
         Priorities priority = pickPriority();
         formattedAskString("Task category", 2);
         Categories category = pickCategory();
-        LocalDate date = noNullDate();
-        LocalTime time = noNullTime();
+        LocalDate date = getDate();
+        LocalTime time = getTime();
         LocalDateTime deadline = LocalDateTime.of(date,time);
         task.setTitle(title);
         task.setDescription(description);
@@ -51,25 +59,28 @@ public class Utility {
 
     }
 
-    //validates if the input value is longer than five characters
-    private String cleanInput(){
+    /**
+     * Reads user input and ensures it meets a minimum length requirement.
+     *
+     * @return A valid user input string.
+     */
+    private String cleanInput() {
         String userInput = scanner.nextLine();
-        if(userInput.length() < 5){
-            while(true){
-                try{
-                    System.out.println("Length must be greater than 5");
-                    userInput = scanner.nextLine();
-                    if(userInput.length() >= 5){
-                        break;
-                    }
-                } catch (Exception e){
-                    System.out.println("Length must be greater than 5");
-                }
-            }
+
+        while (userInput.length() < 5) {
+            System.out.println("Length must be greater than 5");
+            userInput = scanner.nextLine();
         }
+
         return userInput;
     }
 
+
+    /**
+     * Prompts the user to pick a category from a list of available categories.
+     *
+     * @return The selected category.
+     */
     private Categories pickCategory(){
         int i = 1;
         for(Categories category: Categories.values()){
@@ -80,6 +91,12 @@ public class Utility {
         int userInput = pickValueInRange(Categories.values().length);
         return Categories.values()[userInput -1];
     }
+
+    /**
+     * Prompts the user to pick a category from a list of available priorities.
+     *
+     * @return The selected priority.
+     */
 
     private Priorities pickPriority(){
         int i = 1;
@@ -93,6 +110,12 @@ public class Utility {
 
     }
 
+    /**
+     * Prompts the user to pick a value within a specified range.
+     *
+     * @param maxLengthToCheck The maximum valid value.
+     * @return A valid user input within the range.
+     */
     private int pickValueInRange(int maxLengthToCheck){
         int userInput = scanner.nextInt();
         while((userInput > maxLengthToCheck) || (userInput <= 0)){
@@ -102,6 +125,12 @@ public class Utility {
         return userInput;
     }
 
+    /**
+     * Prompts the user to input a date for the task in the format dd/MM/yyyy.
+     * If the input is invalid, it recursively calls itself until a valid date is entered.
+     *
+     * @return The selected date.
+     */
     private LocalDate getDate() {
         try {
             System.out.println("Pick date of task dd/MM/yyyy");
@@ -110,17 +139,16 @@ public class Utility {
             return LocalDate.parse(date, dateFormat);
         } catch (Exception e){
             e.getStackTrace();
-            return null;
-        }
-    }
-
-    private LocalDate noNullDate(){
-        while (getDate() == null){
             return getDate();
         }
-        return getDate();
     }
 
+    /**
+     * Prompts the user to input a time for the task in the format HH:mm.
+     * If the input is invalid, it recursively calls itself until a valid time is entered.
+     *
+     * @return The selected time.
+     */
     private LocalTime getTime() {
         try {
             System.out.println("Time of Task hh:mm");
@@ -129,17 +157,17 @@ public class Utility {
             return LocalTime.parse(time, timeFormatter);
         } catch (Exception e){
             e.getStackTrace();
-            return null;
-        }
-    }
-
-    private LocalTime noNullTime(){
-        while (getTime() == null){
             return getTime();
         }
-        return getTime();
     }
 
+
+    /**
+     * Inserts a task into the db table in the database.
+     * The task details (title, description, priority, deadline, category) are retrieved from the task object.
+     *
+     * @param connection The database connection.
+     */
     public void rowInsert(Connection connection) {
         try{
             String sqlInsert = "INSERT INTO TODO (TITLE, DESCRIPTION, PRIORITY, DEADLINE, CATEGORY) VALUES (?,?,?,?,?)";
