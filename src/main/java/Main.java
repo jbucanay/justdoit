@@ -14,11 +14,6 @@ public class Main {
         utility.userInteraction();
         try(Connection connection = dcm.getConnection()) {
             utility.rowInsert(connection);
-//            Statement statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
-//            while (resultSet.next()){
-//                System.out.println(resultSet.getInt(1));
-//            }
         } catch (SQLException e){
             e.printStackTrace();
         }
