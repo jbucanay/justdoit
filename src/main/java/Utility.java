@@ -13,10 +13,18 @@ import java.util.Scanner;
 public class Utility {
     private final Scanner scanner;
     private final Task task;
+    private final String dbName;
+    private final String uname;
+    private final String pwd;
+    private final DatabaseConnectionManager dcm;
 
     public Utility(){
         this.task = new Task();
         this.scanner = new Scanner(System.in);
+        this.dbName = System.getenv("POSTGRES_DB");
+        this.uname = System.getenv("POSTGRES_UNM");
+        this.pwd = System.getenv("POSTGRES_PSWD");
+        this.dcm = new DatabaseConnectionManager("localhost",this.dbName, this.uname , this.pwd, "5432");
     }
 
     /**
@@ -57,7 +65,12 @@ public class Utility {
         task.setPriority(priority);
         task.setDeadline(deadline);
         task.setCategory(category);
-
+        try(Connection connection = this.dcm.getConnection()) {
+           this.rowInsert(connection);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        appProcess();
     }
 
     /**
@@ -117,10 +130,10 @@ public class Utility {
      * @return A valid user input within the range.
      */
     private int pickValueInRange(int maxLengthToCheck){
-        int userInput = scanner.nextInt();
+        int userInput = Integer.parseInt(scanner.nextLine());
         while((userInput > maxLengthToCheck) || (userInput <= 0)){
             System.out.printf("Try again, value must be > %d or <= %d%n",0, maxLengthToCheck);
-            userInput = scanner.nextInt();
+            userInput = Integer.parseInt(scanner.nextLine());;
         }
         return userInput;
     }
@@ -134,7 +147,7 @@ public class Utility {
     private LocalDate getDate() {
         try {
             System.out.println("Pick date of task dd/MM/yyyy");
-            String date = scanner.next();
+            String date = scanner.nextLine();
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             return LocalDate.parse(date, dateFormat);
         } catch (Exception e){
@@ -152,7 +165,7 @@ public class Utility {
     private LocalTime getTime() {
         try {
             System.out.println("Time of Task hh:mm");
-            String time = scanner.next();
+            String time = scanner.nextLine();
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             return LocalTime.parse(time, timeFormatter);
         } catch (Exception e){
@@ -178,7 +191,7 @@ public class Utility {
             preparedStatement.setObject(4, this.task.getDeadline());
             preparedStatement.setString(5, this.task.getCategory().name());
             preparedStatement.execute();
-            System.out.println("Row inserted");
+            System.out.println("Row inserted!");
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -194,16 +207,15 @@ public void showAllTasks(){
 
 public void appProcess(){
     try {
-        formattedAskString("Welcome to task management", 2);
+        formattedAskString("Pick choice", 2);
         System.out.println("""
                 Type 1: Add Tasks
                 Type 2: View Tasks
                 Type 3: Edit Task
                 Type 4: Delete task
-                Type 5: Exit
-                """);
+                Type 5: Exit""");
         System.out.print("Choice: ");
-        int interactWith = scanner.nextInt();
+        int interactWith = Integer.parseInt(scanner.nextLine());
         switch (interactWith){
             case 1 -> addTasks();
             case 2 -> System.out.println("view task");

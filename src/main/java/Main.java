@@ -6,17 +6,10 @@ import java.text.ParseException;
 
 public class Main {
     public static void main(String[] args) {
-        String dbName = System.getenv("POSTGRES_DB");
-        String uname = System.getenv("POSTGRES_UNM");
-        String pwd = System.getenv("POSTGRES_PSWD");
-        DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",dbName, uname , pwd, "5432");
+
         Utility utility = new Utility();
         utility.appProcess();
-        try(Connection connection = dcm.getConnection()) {
-            utility.rowInsert(connection);
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
+
 
 
     }
