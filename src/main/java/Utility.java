@@ -103,6 +103,7 @@ public class Utility {
         String userInput = scanner.nextLine();
 
         if(userInput.length() < 5) {
+            System.out.println("String length must be >= 5");
             cleanInput();
         }
 
