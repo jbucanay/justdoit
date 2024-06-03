@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 
@@ -75,23 +77,32 @@ public class Utility {
         try(Connection connection = this.dcm.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM TASK");
+            Collection<Task> taskCollection = new LinkedList<>();
             while (resultSet.next()){
-                System.out.print(resultSet.getString("title") + ": ");
-                System.out.print(resultSet.getString("description") + " - ");
-                System.out.print(resultSet.getString("priority") + " - ");
-                System.out.println(resultSet.getString("category"));
+                taskCollection.add(new Task(resultSet.getString("title"),
+                        resultSet.getString("description"),
+                        resultSet.getObject("priority"),
+                        resultSet.getObject("deadline"),
+                        resultSet.getString("category"),
+                        resultSet.getInt("task_id")
+                        ));
             }
-        } catch (SQLException e){
-            e.printStackTrace();
+            int viewingManager;
+            do{
+                viewingManager = viewingTasks();
+                switch (viewingManager){
+                    case 1 -> System.out.println("viewing all");
+                    case 2 -> System.out.println("sort by title check if already in desc then do asc");
+                    case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
+                    case 4 -> System.out.println("sort by priority");
+                    default -> System.out.println("Exiting...");
+                }
+            } while (viewingManager !=5);
+
+        } catch (SQLException | NumberFormatException e){
+            System.out.println("Exiting... fix this with parse int and while loop | recursion");
         }
         appProcess();
-
-            //            Statement statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
-//            while (resultSet.next()){
-//                System.out.println(resultSet.getInt(1));
-//            }
-
     }
 
     /**
@@ -246,6 +257,32 @@ public void appProcess(){
 
     }
 
+}
+
+private int viewingTasks(){
+    try {
+        formattedAskString("Pick how to view your tasks", 2);
+        System.out.println("""
+                Type 1: View all tasks
+                Type 2: Sort tasks by title
+                Type 3: Sort tasks by deadline
+                Type 4: Sort task by priority
+                Type 5: Exit""");
+        System.out.print("Choice: ");
+        int interactWith = Integer.parseInt(scanner.nextLine());
+        return switch (interactWith){
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3 -> 3;
+            case 4 -> 4;
+            default ->  5;
+        };
+    }catch (InputMismatchException e){
+        System.out.println(e.getMessage());
+
+    }
+
+    return 0;
 }
 
 
