@@ -1,7 +1,5 @@
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -71,6 +69,29 @@ public class Utility {
             e.printStackTrace();
         }
         appProcess();
+    }
+
+    public void viewTasks(){
+        try(Connection connection = this.dcm.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM TASK");
+            while (resultSet.next()){
+                System.out.print(resultSet.getString("title") + ": ");
+                System.out.print(resultSet.getString("description") + " - ");
+                System.out.print(resultSet.getString("priority") + " - ");
+                System.out.println(resultSet.getString("category"));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        appProcess();
+
+            //            Statement statement = connection.createStatement();
+//            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
+//            while (resultSet.next()){
+//                System.out.println(resultSet.getInt(1));
+//            }
+
     }
 
     /**
@@ -197,13 +218,7 @@ public class Utility {
         }
     }
 
-public void showAllTasks(){
-    //            Statement statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM TODO");
-//            while (resultSet.next()){
-//                System.out.println(resultSet.getInt(1));
-//            }
-}
+
 
 public void appProcess(){
     try {
@@ -218,7 +233,7 @@ public void appProcess(){
         int interactWith = Integer.parseInt(scanner.nextLine());
         switch (interactWith){
             case 1 -> addTasks();
-            case 2 -> System.out.println("view task");
+            case 2 -> viewTasks();
             case 3 -> System.out.println("Edit task");
             case 4 -> System.out.println("Delete task");
             case 5 -> System.out.println("Exiting...");
