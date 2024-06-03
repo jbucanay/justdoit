@@ -104,7 +104,8 @@ public class Utility {
 
         if(userInput.length() < 5) {
             System.out.println("String length must be >= 5");
-            cleanInput();
+            //using recursion for funsies
+            return cleanInput();
         }
 
         return userInput;
