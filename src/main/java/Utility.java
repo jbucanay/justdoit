@@ -183,7 +183,7 @@ public class Utility {
      */
     public void rowInsert(Connection connection) {
         try{
-            String sqlInsert = "INSERT INTO TODO (TITLE, DESCRIPTION, PRIORITY, DEADLINE, CATEGORY) VALUES (?,?,?,?,?)";
+            String sqlInsert = "INSERT INTO TASK (TITLE, DESCRIPTION, PRIORITY, DEADLINE, CATEGORY) VALUES (?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
             preparedStatement.setString(1, this.task.getTitle());
             preparedStatement.setString(2, this.task.getDescription());
