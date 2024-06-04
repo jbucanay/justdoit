@@ -90,8 +90,8 @@ public class Utility {
             do{
                 viewingManager = viewingTasks();
                 switch (viewingManager){
-                    case 1 -> allTasksFormatted(this.taskCollection);
-                    case 2 -> System.out.println("sort by title check if already in desc then do asc");
+                    case 1 -> allTasksFormatted();
+                    case 2 -> sortTaskByTitle();
                     case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
                     case 4 -> System.out.println("sort by priority");
                     default -> System.out.println("Exiting...");
@@ -104,9 +104,9 @@ public class Utility {
         appProcess();
     }
 
-    private void allTasksFormatted(Collection<Task> tasks){
+    private void allTasksFormatted(){
         try {
-            tasks.forEach(t -> {
+            taskCollection.forEach(t -> {
                 System.out.printf("Title: %s%n",t.getTitle().substring(0,1).toUpperCase() + t.getTitle().substring(1));
                 System.out.printf("Desc: %s%n", t.getDescription().substring(0,1).toUpperCase() + t.getDescription().substring(1));
                 System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
@@ -120,7 +120,14 @@ public class Utility {
         }
     }
 
-    private void sortTaskByTitle(Collection<Task> tasks){
+    private void sortTaskByTitle(){
+        try {
+            System.out.println("hit");
+            allTasksFormatted();
+
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
     }
 
