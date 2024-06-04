@@ -121,6 +121,14 @@ public class Utility {
         }
     }
 
+    /*
+        Todo: sort using different techniques
+        1) Comparing
+        2) Comparable (class compareto)
+        3) comparator
+        4) check if already sorted, then sort other way
+     */
+
     private void sortTaskByTitle(){
         try {
             this.taskCollection = taskCollection.stream()
