@@ -4,10 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.InputMismatchException;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Utility {
@@ -82,9 +79,9 @@ public class Utility {
                 taskCollection.add(new Task(resultSet.getString("title"),
                         resultSet.getString("description"),
                         resultSet.getString("priority"),
-//                        resultSet.getObject("deadline"),
-//                        resultSet.getString("category"),
-                        resultSet.getInt("task_id")
+                        resultSet.getString("category"),
+                        resultSet.getInt("task_id"),
+                        resultSet.getString("deadline")
                         ));
             }
             int viewingManager;
@@ -108,9 +105,11 @@ public class Utility {
     private void allTasksFormatted(Collection<Task> taskCollection){
         try {
             taskCollection.forEach(t -> {
-                System.out.printf("Title: %s%n",t.getTitle());
-                System.out.printf("Desc: %s%n", t.getDescription());
-                System.out.printf("Priority: %s%n", t.getPriority().name());
+                System.out.printf("Title: %s%n",t.getTitle().substring(0,1).toUpperCase() + t.getTitle().substring(1));
+                System.out.printf("Desc: %s%n", t.getDescription().substring(0,1).toUpperCase() + t.getDescription().substring(1));
+                System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
+                System.out.printf("Category: %s%n", t.getCategory().name().replace("_", " "));
+                System.out.printf("Due: %s%n", t.getDeadline());
                 System.out.println(" ");
             });
 

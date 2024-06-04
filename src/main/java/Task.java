@@ -1,4 +1,7 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
 
 public class Task {
     private String title;
@@ -8,10 +11,12 @@ public class Task {
     private Categories category;
     private int taskId;
 
-    public Task(String title, String description, String priority, int taskId) {
+    public Task(String title, String description, String priority, String category,  int taskId,String deadline) {
         this.title = title;
         this.description = description;
-        this.priority = StringToEnum(priority);
+        this.priority = stringToPriorityEnum(priority);
+        this.category = stringToCategoryEnum(category);
+        this.deadline = stringToDate(deadline);
         this.taskId = taskId;
     }
 
@@ -19,9 +24,21 @@ public class Task {
 
     }
 
-    private Priorities StringToEnum(String theString){
+    private LocalDateTime stringToDate(String theString){
+        String[] twoArray = theString.split(" ");
+        LocalDate date = LocalDate.parse(twoArray[0]);
+        LocalTime time = LocalTime.parse(twoArray[1].substring(0,5));
+        return LocalDateTime.of(date,time);
+    }
+
+    private Priorities stringToPriorityEnum(String theString) {
         return Priorities.valueOf(theString);
     }
+
+    private Categories stringToCategoryEnum(String theString) {
+        return Categories.valueOf(theString);
+    }
+
 
     public int getTaskId() {
         return taskId;
