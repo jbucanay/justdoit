@@ -13,6 +13,8 @@ public class Utility {
     private final String dbName;
     private final String uname;
     private final String pwd;
+
+    private Collection<Task> taskCollection;
     private final DatabaseConnectionManager dcm;
 
     public Utility(){
@@ -74,9 +76,9 @@ public class Utility {
         try(Connection connection = this.dcm.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM TASK");
-            Collection<Task> taskCollection = new LinkedList<>();
+            this.taskCollection = new LinkedList<>();
             while (resultSet.next()){
-                taskCollection.add(new Task(resultSet.getString("title"),
+                this.taskCollection.add(new Task(resultSet.getString("title"),
                         resultSet.getString("description"),
                         resultSet.getString("priority"),
                         resultSet.getString("category"),
@@ -88,7 +90,7 @@ public class Utility {
             do{
                 viewingManager = viewingTasks();
                 switch (viewingManager){
-                    case 1 -> allTasksFormatted(taskCollection);
+                    case 1 -> allTasksFormatted(this.taskCollection);
                     case 2 -> System.out.println("sort by title check if already in desc then do asc");
                     case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
                     case 4 -> System.out.println("sort by priority");
@@ -102,9 +104,9 @@ public class Utility {
         appProcess();
     }
 
-    private void allTasksFormatted(Collection<Task> taskCollection){
+    private void allTasksFormatted(Collection<Task> tasks){
         try {
-            taskCollection.forEach(t -> {
+            tasks.forEach(t -> {
                 System.out.printf("Title: %s%n",t.getTitle().substring(0,1).toUpperCase() + t.getTitle().substring(1));
                 System.out.printf("Desc: %s%n", t.getDescription().substring(0,1).toUpperCase() + t.getDescription().substring(1));
                 System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
@@ -116,6 +118,10 @@ public class Utility {
         } catch (NullPointerException e){
             System.out.println(e.getMessage());
         }
+    }
+
+    private void sortTaskByTitle(Collection<Task> tasks){
+
     }
 
     /**
