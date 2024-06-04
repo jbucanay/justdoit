@@ -122,8 +122,10 @@ public class Utility {
 
     private void sortTaskByTitle(){
         try {
-            System.out.println("hit");
-            allTasksFormatted();
+            taskCollection.stream()
+                            .sorted(Comparator.comparing(thisOne -> thisOne.getTitle().toLowerCase()))
+                                    . forEach(t -> System.out.println(t.getTitle()));
+//            allTasksFormatted();
 
         } catch (Exception e){
             System.out.println(e.getMessage());
