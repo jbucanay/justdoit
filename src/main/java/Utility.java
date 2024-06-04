@@ -81,9 +81,9 @@ public class Utility {
             while (resultSet.next()){
                 taskCollection.add(new Task(resultSet.getString("title"),
                         resultSet.getString("description"),
-                        resultSet.getObject("priority"),
-                        resultSet.getObject("deadline"),
-                        resultSet.getString("category"),
+                        resultSet.getString("priority"),
+//                        resultSet.getObject("deadline"),
+//                        resultSet.getString("category"),
                         resultSet.getInt("task_id")
                         ));
             }
@@ -91,7 +91,7 @@ public class Utility {
             do{
                 viewingManager = viewingTasks();
                 switch (viewingManager){
-                    case 1 -> System.out.println("viewing all");
+                    case 1 -> allTasksFormatted(taskCollection);
                     case 2 -> System.out.println("sort by title check if already in desc then do asc");
                     case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
                     case 4 -> System.out.println("sort by priority");
@@ -103,6 +103,20 @@ public class Utility {
             System.out.println("Exiting... fix this with parse int and while loop | recursion");
         }
         appProcess();
+    }
+
+    private void allTasksFormatted(Collection<Task> taskCollection){
+        try {
+            taskCollection.forEach(t -> {
+                System.out.printf("Title: %s%n",t.getTitle());
+                System.out.printf("Desc: %s%n", t.getDescription());
+                System.out.printf("Priority: %s%n", t.getPriority().name());
+                System.out.println(" ");
+            });
+
+        } catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

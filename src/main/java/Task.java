@@ -8,12 +8,10 @@ public class Task {
     private Categories category;
     private int taskId;
 
-    public Task(String title, String description, Priorities priority, LocalDateTime deadline, Categories category, int taskId) {
+    public Task(String title, String description, String priority, int taskId) {
         this.title = title;
         this.description = description;
-        this.priority = priority;
-        this.deadline = deadline;
-        this.category = category;
+        this.priority = StringToEnum(priority);
         this.taskId = taskId;
     }
 
@@ -21,14 +19,15 @@ public class Task {
 
     }
 
-    public Task(String title, String description, Object priority, Object deadline, String category, int task_id) {
+    private Priorities StringToEnum(String theString){
+        return Priorities.valueOf(theString);
     }
 
-    public int getTaskIdd() {
+    public int getTaskId() {
         return taskId;
     }
 
-    public void setTask_id(int task_id) {
+    public void setTaskId(int task_id) {
         this.taskId = task_id;
     }
 
