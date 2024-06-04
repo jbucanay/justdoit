@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Utility {
@@ -122,10 +123,10 @@ public class Utility {
 
     private void sortTaskByTitle(){
         try {
-            taskCollection.stream()
+            this.taskCollection = taskCollection.stream()
                             .sorted(Comparator.comparing(thisOne -> thisOne.getTitle().toLowerCase()))
-                                    . forEach(t -> System.out.println(t.getTitle()));
-//            allTasksFormatted();
+                                    .collect(Collectors.toList());
+            allTasksFormatted();
 
         } catch (Exception e){
             System.out.println(e.getMessage());
