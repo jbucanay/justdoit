@@ -24,6 +24,7 @@ public class Task {
 
     }
 
+
     private LocalDateTime stringToDate(String theString){
         String[] twoArray = theString.split(" ");
         LocalDate date = LocalDate.parse(twoArray[0]);

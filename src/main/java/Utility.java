@@ -94,7 +94,7 @@ public class Utility {
                     case 1 -> allTasksFormatted();
                     case 2 -> sortTaskByTitle();
                     case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
-                    case 4 -> System.out.println("sort by priority");
+                    case 4 -> sortBYPriority();
                     default -> System.out.println("Exiting...");
                 }
             } while (viewingManager !=5);
@@ -129,10 +129,22 @@ public class Utility {
         4) check if already sorted, then sort other way
      */
 
+    private void sortBYPriority(){
+        try{
+            taskCollection = taskCollection.stream()
+                    .sorted(Comparator.comparing(Task::getPriority))
+                    .collect(Collectors.toList());
+            allTasksFormatted();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void sortTaskByTitle(){
         try {
             this.taskCollection = taskCollection.stream()
-                            .sorted(Comparator.comparing(thisOne -> thisOne.getTitle().toLowerCase()))
+                            .sorted(Comparator.comparing(theTask -> theTask.getTitle().toLowerCase()))
                                     .collect(Collectors.toList());
             allTasksFormatted();
 
