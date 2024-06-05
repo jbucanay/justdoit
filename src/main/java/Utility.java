@@ -1,4 +1,7 @@
 
+import com.google.common.collect.Comparators;
+import com.google.common.collect.Ordering;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,15 +92,16 @@ public class Utility {
             }
             int viewingManager;
             do{
+                //
+                allTasksFormatted();
                 viewingManager = viewingTasks();
                 switch (viewingManager){
-                    case 1 -> allTasksFormatted();
-                    case 2 -> sortTaskByTitle();
-                    case 3 -> System.out.println("sort by deadline, create separate functions to handle it");
-                    case 4 -> sortBYPriority();
+                    case 1 -> sortTaskByTitle();
+                    case 2 -> sortByDeadline();
+                    case 3 -> sortBYPriority();
                     default -> System.out.println("Exiting...");
                 }
-            } while (viewingManager !=5);
+            } while (viewingManager !=4);
 
         } catch (SQLException | NumberFormatException e){
             System.out.println("Exiting... fix this with parse int and while loop | recursion");
@@ -128,6 +132,37 @@ public class Utility {
         3) comparator
         4) check if already sorted, then sort other way
      */
+    /*
+    sorting by deadline, sort naturally if sorted or in reverse sort and vice versa
+     */
+    private void sortByDeadline(){
+        try {
+            Ordering<Task> natural = Ordering.natural().onResultOf(Task::getDeadline);
+            Ordering<Task> reverse = natural.reverse();
+
+
+            if(natural.isOrdered(taskCollection) ){
+                System.out.println("Sorting in reverse...");
+                //sleep to let user know what sorting is going to be done
+                Thread.sleep(2000);
+                taskCollection = taskCollection.stream()
+                        .sorted(Comparator.comparing(Task::getDeadline).reversed())
+                        .collect(Collectors.toList());
+            } else if(reverse.isOrdered(taskCollection) || !natural.isOrdered(taskCollection)){
+                System.out.println("Sorting in natural...");
+                //sleep to let user know what sorting is going to be done
+                Thread.sleep(2000);
+                taskCollection = taskCollection.stream()
+                        .sorted(Comparator.comparing(Task::getDeadline))
+                        .collect(Collectors.toList());
+            } else {
+                System.out.println("nothing was done");
+            }
+            allTasksFormatted();
+        } catch (Exception e){
+            e.getStackTrace();
+        }
+    }
 
     private void sortBYPriority(){
         try{
@@ -311,21 +346,20 @@ public void appProcess(){
 
 private int viewingTasks(){
     try {
-        formattedAskString("Pick how to view your tasks", 2);
+        formattedAskString("Pick how to sort your tasks", 2);
         System.out.println("""
-                Type 1: View all tasks
-                Type 2: Sort tasks by title
-                Type 3: Sort tasks by deadline
-                Type 4: Sort task by priority
-                Type 5: Exit""");
+                Type 1: Sort tasks by title
+                Type 2: Sort tasks by deadline
+                Type 3: Sort task by priority
+                Type 4: Exit""");
         System.out.print("Choice: ");
         int interactWith = Integer.parseInt(scanner.nextLine());
         return switch (interactWith){
             case 1 -> 1;
             case 2 -> 2;
             case 3 -> 3;
-            case 4 -> 4;
-            default ->  5;
+            default -> 4;
+
         };
     }catch (InputMismatchException e){
         System.out.println(e.getMessage());
