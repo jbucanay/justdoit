@@ -3,6 +3,7 @@ import com.google.common.collect.Comparators;
 import com.google.common.collect.Ordering;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -75,8 +76,7 @@ public class Utility {
         }
         appProcess();
     }
-
-    public void viewTasks(){
+    public void createTaskCollection(){
         try(Connection connection = this.dcm.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM TASK");
@@ -88,8 +88,14 @@ public class Utility {
                         resultSet.getString("category"),
                         resultSet.getInt("task_id"),
                         resultSet.getString("deadline")
-                        ));
-            }
+                ));
+            } } catch (SQLException | NumberFormatException e){
+            System.out.println("Exiting... fix this with parse int and while loop | recursion");
+        }
+    }
+
+    public void viewTasks(){
+        try {
             int viewingManager;
             do{
                 //
@@ -103,7 +109,7 @@ public class Utility {
                 }
             } while (viewingManager !=4);
 
-        } catch (SQLException | NumberFormatException e){
+        } catch (NumberFormatException e){
             System.out.println("Exiting... fix this with parse int and while loop | recursion");
         }
         appProcess();
@@ -112,6 +118,7 @@ public class Utility {
     private void allTasksFormatted(){
         try {
             taskCollection.forEach(t -> {
+                System.out.printf("Task Id: %d%n", t.getTaskId());
                 System.out.printf("Title: %s%n",t.getTitle().substring(0,1).toUpperCase() + t.getTitle().substring(1));
                 System.out.printf("Desc: %s%n", t.getDescription().substring(0,1).toUpperCase() + t.getDescription().substring(1));
                 System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
@@ -123,6 +130,23 @@ public class Utility {
         } catch (NullPointerException e){
             System.out.println(e.getMessage());
         }
+    }
+
+    private void getOneTask(){
+        try {
+            System.out.println("Choose the id of the task to edit");
+            allTasksFormatted();
+            int test = Integer.parseInt(scanner.nextLine());
+            Task task = taskCollection.stream()
+                    .filter(t -> t.getTaskId() == test)
+                    .findFirst()
+                    .orElse(null);
+            System.out.println(task.getTitle());
+
+        } catch (NullPointerException | NumberFormatException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     /*
@@ -332,7 +356,7 @@ public void appProcess(){
         switch (interactWith){
             case 1 -> addTasks();
             case 2 -> viewTasks();
-            case 3 -> System.out.println("Edit task");
+            case 3 -> getOneTask();
             case 4 -> System.out.println("Delete task");
             case 5 -> System.out.println("Exiting...");
             default -> appProcess();
