@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 
-public class Task {
+public class Task implements Comparable<Task>{
     private String title;
     private String description;
     private Priorities priority;
@@ -22,6 +22,12 @@ public class Task {
 
     public Task(){
 
+    }
+
+    //when running Comparator.sort(will sort by priority)
+    @Override
+    public int compareTo(Task that){
+        return that.priority.getPriorityValue() > this.priority.getPriorityValue() ? 1 : -1;
     }
 
 

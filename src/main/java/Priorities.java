@@ -5,9 +5,9 @@ public enum Priorities {
     HIGH(8),
     CRITICAL(10),
     NO_PRIORITY(0);
-    private int priorityValue;
+    private final int priorityValue;
 
-    private Priorities(int priorityValue){
+    Priorities(int priorityValue){
         this.priorityValue = priorityValue;
     }
 

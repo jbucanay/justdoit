@@ -132,7 +132,8 @@ public class Utility {
     private void sortBYPriority(){
         try{
             taskCollection = taskCollection.stream()
-                    .sorted(Comparator.comparing(Task::getPriority))
+                    .sorted(Task::compareTo)
+//                    .sorted(Comparator.reverseOrder())
                     .collect(Collectors.toList());
             allTasksFormatted();
 
