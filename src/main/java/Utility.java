@@ -389,7 +389,8 @@ public class Utility {
             preparedStatement.setString(5, this.task.getCategory().name());
             preparedStatement.execute();
             System.out.println("Row inserted!");
-        } catch (SQLException e) {
+            Thread.sleep(1100);
+        } catch (SQLException  | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -403,7 +404,8 @@ public class Utility {
             preparedStatement.setInt(2, taskId);
             preparedStatement.execute();
             System.out.println("Row updated!");
-        } catch (SQLException e) {
+            Thread.sleep(1000);
+        } catch (SQLException | InterruptedException e) {
             e.printStackTrace();
         }
     }
