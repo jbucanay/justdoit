@@ -177,8 +177,11 @@ public class Utility {
                     System.out.printf("Due: %s%n", taskToEdit.getDeadline());
                     System.out.println(" ");
                     //can't insert null values so will have to use old values if no new ones inserted
+                    //only updating task title now, later can look into updating others
                     try(Connection connection = this.dcm.getConnection()) {
-                        this.rowUpdate(connection, taskToEdit.getTaskId());
+                        System.out.println("Insert new task title to edit to");
+                        String newTitle = scanner.nextLine();
+                        this.rowUpdate(connection, taskToEdit.getTaskId(), newTitle.isBlank() ? taskToEdit.getTitle() : newTitle);
                     } catch (SQLException e){
                         e.printStackTrace();
                     }
@@ -386,16 +389,14 @@ public class Utility {
         }
     }
 
-    public void rowUpdate(Connection connection, int taskId){
+    public void rowUpdate(Connection connection, int taskId, String title){
         try{
             String sqlUpdate = "UPDATE TASK SET TITLE = ? WHERE TASK_ID = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
-            preparedStatement.setString(1, "test");
+            preparedStatement.setString(1, title);
             preparedStatement.setInt(2,taskId);
-            boolean returned = preparedStatement.execute();
-            System.out.println(returned);
-
-            System.out.println("Row updated");
+            preparedStatement.execute();
+            System.out.println("Row updated!");
         } catch(SQLException e){
             e.printStackTrace();
         }
@@ -404,6 +405,8 @@ public class Utility {
 
 
 public void appProcess(){
+        //create task collection in case new ones came in
+        createTaskCollection();
     try {
         formattedAskString("Pick choice", 2);
         System.out.println("""
@@ -419,7 +422,15 @@ public void appProcess(){
             case 2 -> viewTasks();
             case 3 -> getOneTask();
             case 4 -> System.out.println("Delete task");
-            case 5 -> System.out.println("Exiting...");
+            case 5 -> {
+                try {
+                    System.out.println("Exiting...");
+                Thread.sleep(1000);
+                } catch (InterruptedException e){
+                    e.getStackTrace();
+                }
+
+            }
             default -> appProcess();
         }
     }catch (InputMismatchException e){
