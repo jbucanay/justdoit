@@ -122,12 +122,7 @@ public class Utility {
     private void allTasksFormatted() {
         try {
             taskCollection.forEach(t -> {
-                System.out.printf("Task Id: %d%n", t.getTaskId());
-                System.out.printf("Title: %s%n", t.getTitle().substring(0, 1).toUpperCase() + t.getTitle().substring(1));
-                System.out.printf("Desc: %s%n", t.getDescription().substring(0, 1).toUpperCase() + t.getDescription().substring(1));
-                System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
-                System.out.printf("Category: %s%n", t.getCategory().name().replace("_", " "));
-                System.out.printf("Due: %s%n", t.getDeadline());
+                printATask(t);
                 System.out.println(" ");
             });
 
@@ -160,19 +155,25 @@ public class Utility {
         while (true) {
             taskToEdit = findOneTask.getTask();
             if (taskToEdit != null) {
+                System.out.println(" ");
                 System.out.println("Editing...");
                 System.out.println(" ");
-                System.out.printf("Task Id: %d%n", taskToEdit.getTaskId());
-                System.out.printf("Title: %s%n", taskToEdit.getTitle().substring(0, 1).toUpperCase() + taskToEdit.getTitle().substring(1));
-                System.out.printf("Desc: %s%n", taskToEdit.getDescription().substring(0, 1).toUpperCase() + taskToEdit.getDescription().substring(1));
-                System.out.printf("Priority: %s%n", taskToEdit.getPriority().name().replace("_", " "));
-                System.out.printf("Category: %s%n", taskToEdit.getCategory().name().replace("_", " "));
-                System.out.printf("Due: %s%n", taskToEdit.getDeadline());
+                printATask(taskToEdit);
                 System.out.println(" ");
                 return taskToEdit;
             }
             System.out.println("Task not found");
         }
+    }
+
+    private void printATask(Task aTask) {
+        System.out.printf("Task Id: %d%n", aTask.getTaskId());
+        System.out.printf("Title: %s%n", aTask.getTitle().substring(0, 1).toUpperCase() + aTask.getTitle().substring(1));
+        System.out.printf("Desc: %s%n", aTask.getDescription().substring(0, 1).toUpperCase() + aTask.getDescription().substring(1));
+        System.out.printf("Priority: %s%n", aTask.getPriority().name().replace("_", " "));
+        System.out.printf("Category: %s%n", aTask.getCategory().name().replace("_", " "));
+        System.out.printf("Due: %s%n", aTask.getDeadline());
+
     }
 
     private void updateATask() {
