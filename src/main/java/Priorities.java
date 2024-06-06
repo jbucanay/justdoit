@@ -7,11 +7,11 @@ public enum Priorities {
     NO_PRIORITY(0);
     private final int priorityValue;
 
-    Priorities(int priorityValue){
+    Priorities(int priorityValue) {
         this.priorityValue = priorityValue;
     }
 
-    public int getPriorityValue(){
+    public int getPriorityValue() {
         return this.priorityValue;
     }
 }

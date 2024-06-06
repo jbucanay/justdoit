@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 
-public class Task implements Comparable<Task>{
+public class Task implements Comparable<Task> {
     private String title;
     private String description;
     private Priorities priority;
@@ -11,7 +11,7 @@ public class Task implements Comparable<Task>{
     private Categories category;
     private int taskId;
 
-    public Task(String title, String description, String priority, String category,  int taskId,String deadline) {
+    public Task(String title, String description, String priority, String category, int taskId, String deadline) {
         this.title = title;
         this.description = description;
         this.priority = stringToPriorityEnum(priority);
@@ -20,22 +20,22 @@ public class Task implements Comparable<Task>{
         this.taskId = taskId;
     }
 
-    public Task(){
+    public Task() {
 
     }
 
     //when running Comparator.sort(will sort by priority)
     @Override
-    public int compareTo(Task that){
+    public int compareTo(Task that) {
         return that.priority.getPriorityValue() > this.priority.getPriorityValue() ? 1 : -1;
     }
 
 
-    private LocalDateTime stringToDate(String theString){
+    private LocalDateTime stringToDate(String theString) {
         String[] twoArray = theString.split(" ");
         LocalDate date = LocalDate.parse(twoArray[0]);
-        LocalTime time = LocalTime.parse(twoArray[1].substring(0,5));
-        return LocalDateTime.of(date,time);
+        LocalTime time = LocalTime.parse(twoArray[1].substring(0, 5));
+        return LocalDateTime.of(date, time);
     }
 
     private Priorities stringToPriorityEnum(String theString) {

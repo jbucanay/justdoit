@@ -24,19 +24,19 @@ public class Utility {
     private Collection<Task> taskCollection;
     private final DatabaseConnectionManager dcm;
 
-    public Utility(){
+    public Utility() {
         this.task = new Task();
         this.scanner = new Scanner(System.in);
         this.dbName = System.getenv("POSTGRES_DB");
         this.uname = System.getenv("POSTGRES_UNM");
         this.pwd = System.getenv("POSTGRES_PSWD");
-        this.dcm = new DatabaseConnectionManager("localhost",this.dbName, this.uname , this.pwd, "5432");
+        this.dcm = new DatabaseConnectionManager("localhost", this.dbName, this.uname, this.pwd, "5432");
     }
 
     /**
      * Prints a formatted string with asterisks and an optional prompt.
      *
-     * @param ask The string to be printed.
+     * @param ask          The string to be printed.
      * @param typeOrChoice If 1, prints "Type: " after the string.
      */
     private void formattedAskString(String ask, int typeOrChoice) {
@@ -65,25 +65,26 @@ public class Utility {
         Categories category = pickCategory();
         LocalDate date = getDate();
         LocalTime time = getTime();
-        LocalDateTime deadline = LocalDateTime.of(date,time);
+        LocalDateTime deadline = LocalDateTime.of(date, time);
         task.setTitle(title);
         task.setDescription(description);
         task.setPriority(priority);
         task.setDeadline(deadline);
         task.setCategory(category);
-        try(Connection connection = this.dcm.getConnection()) {
-           this.rowInsert(connection);
-        } catch (SQLException e){
+        try (Connection connection = this.dcm.getConnection()) {
+            this.rowInsert(connection);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         appProcess();
     }
-    public void createTaskCollection(){
-        try(Connection connection = this.dcm.getConnection()) {
+
+    public void createTaskCollection() {
+        try (Connection connection = this.dcm.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM TASK");
             this.taskCollection = new LinkedList<>();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 this.taskCollection.add(new Task(resultSet.getString("title"),
                         resultSet.getString("description"),
                         resultSet.getString("priority"),
@@ -91,111 +92,113 @@ public class Utility {
                         resultSet.getInt("task_id"),
                         resultSet.getString("deadline")
                 ));
-            } } catch (SQLException | NumberFormatException e){
+            }
+        } catch (SQLException | NumberFormatException e) {
             System.out.println("Exiting... fix this with parse int and while loop | recursion");
         }
     }
 
-    public void viewTasks(){
+    public void viewTasks() {
         try {
             int viewingManager;
-            do{
+            do {
                 //
                 allTasksFormatted();
                 viewingManager = viewingTasks();
-                switch (viewingManager){
+                switch (viewingManager) {
                     case 1 -> sortTaskByTitle();
                     case 2 -> sortByDeadline();
                     case 3 -> sortBYPriority();
                     default -> System.out.println("Exiting...");
                 }
-            } while (viewingManager !=4);
+            } while (viewingManager != 4);
 
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Exiting... fix this with parse int and while loop | recursion");
         }
         appProcess();
     }
 
-    private void allTasksFormatted(){
+    private void allTasksFormatted() {
         try {
             taskCollection.forEach(t -> {
                 System.out.printf("Task Id: %d%n", t.getTaskId());
-                System.out.printf("Title: %s%n",t.getTitle().substring(0,1).toUpperCase() + t.getTitle().substring(1));
-                System.out.printf("Desc: %s%n", t.getDescription().substring(0,1).toUpperCase() + t.getDescription().substring(1));
+                System.out.printf("Title: %s%n", t.getTitle().substring(0, 1).toUpperCase() + t.getTitle().substring(1));
+                System.out.printf("Desc: %s%n", t.getDescription().substring(0, 1).toUpperCase() + t.getDescription().substring(1));
                 System.out.printf("Priority: %s%n", t.getPriority().name().replace("_", " "));
                 System.out.printf("Category: %s%n", t.getCategory().name().replace("_", " "));
                 System.out.printf("Due: %s%n", t.getDeadline());
                 System.out.println(" ");
             });
 
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void getOneTask(){
-        try {
-            System.out.println("Choose the id of the task to edit");
-            IntStream.range(1,4).forEach((i)-> {
-                try {
-                    System.out.printf("Select tasks in %d%n", i);
-                    Thread.sleep(1000);
+    private void updateARow() {
 
-                } catch (InterruptedException e){
-                    System.out.println(e.getMessage());
-                }
-            });
-            allTasksFormatted();
-            @FunctionalInterface
-             interface InterfaceToUseLambda {
-                Task getTask();
-            }
+    }
 
-            InterfaceToUseLambda findOneTask = ()-> {
-                System.out.print("Choice: ");
-                int idOfTask = Integer.parseInt(scanner.nextLine());
-                return taskCollection.stream()
-                        .filter(t -> t.getTaskId() == idOfTask)
-                        .findFirst()
-                        .orElse(null);
-
-            };
-
-            Task taskToEdit;
-
-            while(true){
-                taskToEdit = findOneTask.getTask();
-                if(taskToEdit != null){
-                    System.out.println("Editing...");
-                    System.out.println(" ");
-                    System.out.printf("Task Id: %d%n", taskToEdit.getTaskId());
-                    System.out.printf("Title: %s%n",taskToEdit.getTitle().substring(0,1).toUpperCase() + taskToEdit.getTitle().substring(1));
-                    System.out.printf("Desc: %s%n", taskToEdit.getDescription().substring(0,1).toUpperCase() + taskToEdit.getDescription().substring(1));
-                    System.out.printf("Priority: %s%n", taskToEdit.getPriority().name().replace("_", " "));
-                    System.out.printf("Category: %s%n", taskToEdit.getCategory().name().replace("_", " "));
-                    System.out.printf("Due: %s%n", taskToEdit.getDeadline());
-                    System.out.println(" ");
-                    //can't insert null values so will have to use old values if no new ones inserted
-                    //only updating task title now, later can look into updating others
-                    try(Connection connection = this.dcm.getConnection()) {
-                        System.out.println("Insert new task title to edit to");
-                        String newTitle = scanner.nextLine();
-                        this.rowUpdate(connection, taskToEdit.getTaskId(), newTitle.isBlank() ? taskToEdit.getTitle() : newTitle);
-                    } catch (SQLException e){
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                System.out.println("Task not found");
-            }
-
-        } catch (NullPointerException | NumberFormatException e){
-            System.out.println(e.getMessage());
+    private Task findATask() {
+        @FunctionalInterface
+        interface InterfaceToUseLambda {
+            Task getTask();
         }
 
-        appProcess();
+        InterfaceToUseLambda findOneTask = () -> {
+            System.out.print("Choice: ");
+            int idOfTask = Integer.parseInt(scanner.nextLine());
+            return taskCollection.stream()
+                    .filter(t -> t.getTaskId() == idOfTask)
+                    .findFirst()
+                    .orElse(null);
+        };
 
+        Task taskToEdit;
+
+        while (true) {
+            taskToEdit = findOneTask.getTask();
+            if (taskToEdit != null) {
+                System.out.println("Editing...");
+                System.out.println(" ");
+                System.out.printf("Task Id: %d%n", taskToEdit.getTaskId());
+                System.out.printf("Title: %s%n", taskToEdit.getTitle().substring(0, 1).toUpperCase() + taskToEdit.getTitle().substring(1));
+                System.out.printf("Desc: %s%n", taskToEdit.getDescription().substring(0, 1).toUpperCase() + taskToEdit.getDescription().substring(1));
+                System.out.printf("Priority: %s%n", taskToEdit.getPriority().name().replace("_", " "));
+                System.out.printf("Category: %s%n", taskToEdit.getCategory().name().replace("_", " "));
+                System.out.printf("Due: %s%n", taskToEdit.getDeadline());
+                System.out.println(" ");
+                return taskToEdit;
+            }
+            System.out.println("Task not found");
+        }
+    }
+
+    private void updateATask() {
+        System.out.println("Choose the id of the task to edit");
+        IntStream.range(1, 4).forEach((i) -> {
+            try {
+                System.out.printf("Select tasks in %d%n", i);
+                Thread.sleep(1000);
+
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+        allTasksFormatted();
+
+        Task taskToEdit = findATask();
+        //can't insert null values so will have to use old values if no new ones inserted
+        //only updating task title now, later can look into updating others
+        try (Connection connection = this.dcm.getConnection()) {
+            System.out.println("Insert new task title to edit to");
+            String newTitle = scanner.nextLine();
+            this.rowUpdate(connection, taskToEdit.getTaskId(), newTitle.isBlank() ? taskToEdit.getTitle() : newTitle);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        appProcess();
     }
 
     /*
@@ -208,20 +211,20 @@ public class Utility {
     /*
     sorting by deadline, sort naturally if sorted or in reverse sort and vice versa
      */
-    private void sortByDeadline(){
+    private void sortByDeadline() {
         try {
             Ordering<Task> natural = Ordering.natural().onResultOf(Task::getDeadline);
             Ordering<Task> reverse = natural.reverse();
 
 
-            if(natural.isOrdered(taskCollection) ){
+            if (natural.isOrdered(taskCollection)) {
                 System.out.println("Sorting in reverse...");
                 //sleep to let user know what sorting is going to be done
                 Thread.sleep(2000);
                 taskCollection = taskCollection.stream()
                         .sorted(Comparator.comparing(Task::getDeadline).reversed())
                         .collect(Collectors.toList());
-            } else if(reverse.isOrdered(taskCollection) || !natural.isOrdered(taskCollection)){
+            } else if (reverse.isOrdered(taskCollection) || !natural.isOrdered(taskCollection)) {
                 System.out.println("Sorting in natural...");
                 //sleep to let user know what sorting is going to be done
                 Thread.sleep(2000);
@@ -232,32 +235,32 @@ public class Utility {
                 System.out.println("nothing was done");
             }
             allTasksFormatted();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
         }
     }
 
-    private void sortBYPriority(){
-        try{
+    private void sortBYPriority() {
+        try {
             taskCollection = taskCollection.stream()
                     .sorted(Task::compareTo)
 //                    .sorted(Comparator.reverseOrder())
                     .collect(Collectors.toList());
             allTasksFormatted();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void sortTaskByTitle(){
+    private void sortTaskByTitle() {
         try {
             this.taskCollection = taskCollection.stream()
-                            .sorted(Comparator.comparing(theTask -> theTask.getTitle().toLowerCase()))
-                                    .collect(Collectors.toList());
+                    .sorted(Comparator.comparing(theTask -> theTask.getTitle().toLowerCase()))
+                    .collect(Collectors.toList());
             allTasksFormatted();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -271,7 +274,7 @@ public class Utility {
     private String cleanInput() {
         String userInput = scanner.nextLine();
 
-        if(userInput.length() < 5) {
+        if (userInput.length() < 5) {
             System.out.println("String length must be >= 5");
             //using recursion for funsies
             return cleanInput();
@@ -286,15 +289,15 @@ public class Utility {
      *
      * @return The selected category.
      */
-    private Categories pickCategory(){
+    private Categories pickCategory() {
         int i = 1;
-        for(Categories category: Categories.values()){
+        for (Categories category : Categories.values()) {
             System.out.printf("Type %d - %s%n", i, category);
             i++;
         }
         System.out.print("Choice: ");
         int userInput = pickValueInRange(Categories.values().length);
-        return Categories.values()[userInput -1];
+        return Categories.values()[userInput - 1];
     }
 
     /**
@@ -303,15 +306,15 @@ public class Utility {
      * @return The selected priority.
      */
 
-    private Priorities pickPriority(){
+    private Priorities pickPriority() {
         int i = 1;
-        for(Priorities priority: Priorities.values()){
+        for (Priorities priority : Priorities.values()) {
             System.out.printf("Type %d - %s%n", i, priority);
             i++;
         }
         System.out.print("Choice: ");
         int userInput = this.pickValueInRange(Priorities.values().length);
-        return Priorities.values()[userInput -1];
+        return Priorities.values()[userInput - 1];
 
     }
 
@@ -321,11 +324,12 @@ public class Utility {
      * @param maxLengthToCheck The maximum valid value.
      * @return A valid user input within the range.
      */
-    private int pickValueInRange(int maxLengthToCheck){
+    private int pickValueInRange(int maxLengthToCheck) {
         int userInput = Integer.parseInt(scanner.nextLine());
-        while((userInput > maxLengthToCheck) || (userInput <= 0)){
-            System.out.printf("Try again, value must be > %d or <= %d%n",0, maxLengthToCheck);
-            userInput = Integer.parseInt(scanner.nextLine());;
+        while ((userInput > maxLengthToCheck) || (userInput <= 0)) {
+            System.out.printf("Try again, value must be > %d or <= %d%n", 0, maxLengthToCheck);
+            userInput = Integer.parseInt(scanner.nextLine());
+            ;
         }
         return userInput;
     }
@@ -342,7 +346,7 @@ public class Utility {
             String date = scanner.nextLine();
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             return LocalDate.parse(date, dateFormat);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
             return getDate();
         }
@@ -360,7 +364,7 @@ public class Utility {
             String time = scanner.nextLine();
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             return LocalTime.parse(time, timeFormatter);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
             return getTime();
         }
@@ -374,7 +378,7 @@ public class Utility {
      * @param connection The database connection.
      */
     public void rowInsert(Connection connection) {
-        try{
+        try {
             String sqlInsert = "INSERT INTO TASK (TITLE, DESCRIPTION, PRIORITY, DEADLINE, CATEGORY) VALUES (?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
             preparedStatement.setString(1, this.task.getTitle());
@@ -384,86 +388,99 @@ public class Utility {
             preparedStatement.setString(5, this.task.getCategory().name());
             preparedStatement.execute();
             System.out.println("Row inserted!");
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void rowUpdate(Connection connection, int taskId, String title){
-        try{
+    public void rowUpdate(Connection connection, int taskId, String title) {
+        try {
+            //we could also use the task obj and get values from there, either create new one or update our existing task in variables above
             String sqlUpdate = "UPDATE TASK SET TITLE = ? WHERE TASK_ID = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
             preparedStatement.setString(1, title);
-            preparedStatement.setInt(2,taskId);
+            preparedStatement.setInt(2, taskId);
             preparedStatement.execute();
             System.out.println("Row updated!");
-        } catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public void rowDelete(Connection connection, int taskId) {
+        try {
+            String sqlDelete = "DELETE FROM TASK WHERE TASK_ID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete);
+            preparedStatement.setInt(1, taskId);
+            System.out.println("Row deleted!");
+            Thread.sleep(1000);
+        } catch (SQLException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
-public void appProcess(){
+    public void appProcess() {
         //create task collection in case new ones came in
         createTaskCollection();
-    try {
-        formattedAskString("Pick choice", 2);
-        System.out.println("""
-                Type 1: Add Tasks
-                Type 2: View Tasks
-                Type 3: Edit Task
-                Type 4: Delete task
-                Type 5: Exit""");
-        System.out.print("Choice: ");
-        int interactWith = Integer.parseInt(scanner.nextLine());
-        switch (interactWith){
-            case 1 -> addTasks();
-            case 2 -> viewTasks();
-            case 3 -> getOneTask();
-            case 4 -> System.out.println("Delete task");
-            case 5 -> {
-                try {
-                    System.out.println("Exiting...");
-                Thread.sleep(1000);
-                } catch (InterruptedException e){
-                    e.getStackTrace();
+        try {
+            formattedAskString("Pick choice", 2);
+            System.out.println("""
+                    Type 1: Add Tasks
+                    Type 2: View Tasks
+                    Type 3: Edit Task
+                    Type 4: Delete task
+                    Type 5: Exit""");
+            System.out.print("Choice: ");
+            int interactWith = Integer.parseInt(scanner.nextLine());
+            switch (interactWith) {
+                case 1 -> addTasks();
+                case 2 -> viewTasks();
+                case 3 -> updateATask();
+                case 4 -> System.out.println("Delete task");
+                case 5 -> {
+                    try {
+                        System.out.println("Exiting...");
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.getStackTrace();
+                    }
+
                 }
-
+                default -> appProcess();
             }
-            default -> appProcess();
+        } catch (InputMismatchException e) {
+            System.out.println(e.getMessage());
+
         }
-    }catch (InputMismatchException e){
-        System.out.println(e.getMessage());
 
     }
 
-}
+    private int viewingTasks() {
+        try {
+            formattedAskString("Pick how to sort your tasks", 2);
+            System.out.println("""
+                    Type 1: Sort tasks by title
+                    Type 2: Sort tasks by deadline
+                    Type 3: Sort task by priority
+                    Type 4: Exit""");
+            System.out.print("Choice: ");
+            int interactWith = Integer.parseInt(scanner.nextLine());
+            return switch (interactWith) {
+                case 1 -> 1;
+                case 2 -> 2;
+                case 3 -> 3;
+                default -> 4;
 
-private int viewingTasks(){
-    try {
-        formattedAskString("Pick how to sort your tasks", 2);
-        System.out.println("""
-                Type 1: Sort tasks by title
-                Type 2: Sort tasks by deadline
-                Type 3: Sort task by priority
-                Type 4: Exit""");
-        System.out.print("Choice: ");
-        int interactWith = Integer.parseInt(scanner.nextLine());
-        return switch (interactWith){
-            case 1 -> 1;
-            case 2 -> 2;
-            case 3 -> 3;
-            default -> 4;
+            };
+        } catch (InputMismatchException e) {
+            System.out.println(e.getMessage());
 
-        };
-    }catch (InputMismatchException e){
-        System.out.println(e.getMessage());
+        }
 
+        return 0;
     }
-
-    return 0;
-}
 
 
 }
