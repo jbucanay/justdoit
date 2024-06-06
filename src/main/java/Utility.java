@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class Utility {
@@ -135,17 +137,55 @@ public class Utility {
     private void getOneTask(){
         try {
             System.out.println("Choose the id of the task to edit");
+            IntStream.range(1,4).forEach((i)-> {
+                try {
+                    System.out.printf("Select tasks in %d%n", i);
+                    Thread.sleep(1000);
+
+                } catch (InterruptedException e){
+                    System.out.println(e.getMessage());
+                }
+            });
             allTasksFormatted();
-            int test = Integer.parseInt(scanner.nextLine());
-            Task task = taskCollection.stream()
-                    .filter(t -> t.getTaskId() == test)
-                    .findFirst()
-                    .orElse(null);
-            System.out.println(task.getTitle());
+            @FunctionalInterface
+             interface InterfaceToUseLambda {
+                Task getTask();
+            }
+
+            InterfaceToUseLambda findOneTask = ()-> {
+                System.out.print("Choice: ");
+                int idOfTask = Integer.parseInt(scanner.nextLine());
+                return taskCollection.stream()
+                        .filter(t -> t.getTaskId() == idOfTask)
+                        .findFirst()
+                        .orElse(null);
+
+            };
+
+            Task taskToEdit;
+
+            while(true){
+                taskToEdit = findOneTask.getTask();
+                if(taskToEdit != null){
+                    System.out.println("Editing...");
+                    System.out.println(" ");
+                    System.out.printf("Task Id: %d%n", taskToEdit.getTaskId());
+                    System.out.printf("Title: %s%n",taskToEdit.getTitle().substring(0,1).toUpperCase() + taskToEdit.getTitle().substring(1));
+                    System.out.printf("Desc: %s%n", taskToEdit.getDescription().substring(0,1).toUpperCase() + taskToEdit.getDescription().substring(1));
+                    System.out.printf("Priority: %s%n", taskToEdit.getPriority().name().replace("_", " "));
+                    System.out.printf("Category: %s%n", taskToEdit.getCategory().name().replace("_", " "));
+                    System.out.printf("Due: %s%n", taskToEdit.getDeadline());
+                    System.out.println(" ");
+                    break;
+                }
+                System.out.println("Task not found");
+            }
 
         } catch (NullPointerException | NumberFormatException e){
             System.out.println(e.getMessage());
         }
+
+        appProcess();
 
     }
 
