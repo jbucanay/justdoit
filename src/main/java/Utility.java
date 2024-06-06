@@ -131,7 +131,15 @@ public class Utility {
         }
     }
 
-    private void updateARow() {
+    private void deleteTask() {
+        allTasksFormatted();
+        Task taskToDelete = findATask();
+        try (Connection connection = this.dcm.getConnection()) {
+            delete(connection, taskToDelete.getTaskId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        appProcess();
 
     }
 
@@ -410,11 +418,12 @@ public class Utility {
         }
     }
 
-    public void rowDelete(Connection connection, int taskId) {
+    public void delete(Connection connection, int taskId) {
         try {
             String sqlDelete = "DELETE FROM TASK WHERE TASK_ID = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete);
             preparedStatement.setInt(1, taskId);
+            preparedStatement.execute();
             System.out.println("Row deleted!");
             Thread.sleep(1000);
         } catch (SQLException | InterruptedException e) {
@@ -441,7 +450,7 @@ public class Utility {
                 case 1 -> addTasks();
                 case 2 -> viewTasks();
                 case 3 -> updateATask();
-                case 4 -> System.out.println("Delete task");
+                case 4 -> deleteTask();
                 case 5 -> {
                     try {
                         System.out.println("Exiting...");
