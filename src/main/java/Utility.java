@@ -176,6 +176,12 @@ public class Utility {
                     System.out.printf("Category: %s%n", taskToEdit.getCategory().name().replace("_", " "));
                     System.out.printf("Due: %s%n", taskToEdit.getDeadline());
                     System.out.println(" ");
+                    //can't insert null values so will have to use old values if no new ones inserted
+                    try(Connection connection = this.dcm.getConnection()) {
+                        this.rowUpdate(connection, taskToEdit.getTaskId());
+                    } catch (SQLException e){
+                        e.printStackTrace();
+                    }
                     break;
                 }
                 System.out.println("Task not found");
@@ -376,6 +382,21 @@ public class Utility {
             preparedStatement.execute();
             System.out.println("Row inserted!");
         } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void rowUpdate(Connection connection, int taskId){
+        try{
+            String sqlUpdate = "UPDATE TASK SET TITLE = ? WHERE TASK_ID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
+            preparedStatement.setString(1, "test");
+            preparedStatement.setInt(2,taskId);
+            boolean returned = preparedStatement.execute();
+            System.out.println(returned);
+
+            System.out.println("Row updated");
+        } catch(SQLException e){
             e.printStackTrace();
         }
     }
