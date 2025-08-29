@@ -352,6 +352,8 @@ public class Utility {
     private LocalDate getDate() {
         try {
             System.out.println("Pick date of task dd/MM/yyyy");
+            System.out.print("Enter date: ");
+            System.out.print("Sorry this format will change in the future");
             String date = scanner.nextLine();
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             return LocalDate.parse(date, dateFormat);
